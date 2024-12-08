@@ -1,1 +1,6 @@
-sp-based/datasets
+sp-based/datasets/*
+sp-based/checkpoints/*
+sp-based/processed_data/*
+sp-based/*.zip
+sp-based/*/__pycache__/
+sp-based/.ipynb_checkpoints/
