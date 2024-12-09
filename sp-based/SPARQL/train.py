@@ -183,7 +183,7 @@ def train(args):
         if acc and acc > best_acc:
             best_acc = acc
             logging.info("\nupdate best ckpt with acc: {:.4f}".format(best_acc))
-            torch.save(model.state_dict(), os.path.join(args.save_dir, 'model.pt'))
+        torch.save(model.state_dict(), os.path.join(args.save_dir, 'model.pt'))
 
 
 def main():
