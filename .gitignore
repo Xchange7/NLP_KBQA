@@ -4,3 +4,5 @@ sp-based/processed_data/*
 sp-based/*.zip
 sp-based/*/__pycache__/
 sp-based/.ipynb_checkpoints/
+
+sp-based/Virtuoso-Opensource/
