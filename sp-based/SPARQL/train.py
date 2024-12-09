@@ -149,7 +149,7 @@ def train(args):
 
     # validate(args, kb, model, val_loader, device)
     meters = MetricLogger(delimiter="  ")
-    best_acc = 0
+    best_acc = -1
     logging.info("Start training........")
     for epoch in range(args.num_epoch):
         model.train()
@@ -195,7 +195,7 @@ def main():
     # training parameters
     parser.add_argument('--lr', default=0.001, type=float)
     parser.add_argument('--weight_decay', default=1e-5, type=float)
-    parser.add_argument('--num_epoch', default=1, type=int)
+    parser.add_argument('--num_epoch', default=10, type=int)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--seed', type=int, default=666, help='random seed')
     # model hyperparameters
