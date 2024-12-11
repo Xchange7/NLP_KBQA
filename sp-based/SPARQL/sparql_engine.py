@@ -238,7 +238,7 @@ def get_sparql_answer(sparql, data):
             parsed_answer = parsed_answer.replace('_', ' ')
         return parsed_answer
     except Exception:
-        return None
+        raise Exception('Invalid sparql query: {}'.format(sparql))
 
 
 if __name__ == '__main__':
@@ -250,3 +250,8 @@ if __name__ == '__main__':
 
     data = DataForSPARQL(args.kb_path)
     engine = SparqlEngine(data, args.ttl_path)
+
+    """
+    Convert datasets/kb.txt to datasets/kb.ttl:
+    PYTHONPATH=$(pwd) python3 SPARQL/sparql_engine.py --kb_path datasets/kb.json --ttl_path datasets/kb.ttl
+    """

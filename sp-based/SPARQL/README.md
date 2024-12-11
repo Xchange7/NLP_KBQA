@@ -78,7 +78,7 @@ Enter `[ip]:8890` in a browser, you will see the virtuoso service page.
 
 5. Now we can import our kb into virtuoso. Before that, we need to convert our kb to `ttl` format and move it to proper position:
 ```
-python sparql_engine.py --kb_path .dataset/kb.json --ttl_path .dataset/kb.ttl
+PYTHONPATH=$(pwd) python3 SPARQL/sparql_engine.py --kb_path datasets/kb.json --ttl_path datasets/kb.ttl
 sudo chmod 777 .dataset/kb.ttl
 sudo mv .dataset/kb.ttl /usr/local/virtuoso-opensource/share/virtuoso/vad
 ```
