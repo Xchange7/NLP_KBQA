@@ -99,6 +99,8 @@ Illustrations for the models in the code repository:
 ├── BlindGRU  # predicts answer with only the input question, ignoring the knowledge base
 ```
 
+The models(directories) we care for the NLP project: **Bart_SPARQL** and **SPARQL** directories
+
 SP-based Models: 
 
 - sequence-to-sequence model—**RNN** with attention mechanism: generate **SPARQL query** and **KoPL program** at the same time
