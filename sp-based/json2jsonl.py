@@ -77,18 +77,13 @@ if __name__ == "__main__":
         ),
         formatter_class=RawTextHelpFormatter
     )
-    parser.add_argument("--mode", choices=["default", "custom"], help="Mode of operation: 'default' or 'custom'.")
+    parser.add_argument("--mode", required=True, choices=["default", "custom"], help="Mode of operation: 'default' or 'custom'.")
     parser.add_argument("--input_file", help="Path to the input JSON file (required in custom mode).")
     parser.add_argument("--output_directory", help="Path to the output directory (required in custom mode).")
 
     args = parser.parse_args()
 
-    print(f"Mode: {args.mode}")
-
-    if not args.mode:
-        print_error("Please specify the mode of operation with --mode.")
-        parser.print_help()
-    elif args.mode == "default":
+    if args.mode == "default":
         process_default_mode()
     elif args.mode == "custom":
         if not args.input_file or not args.output_directory:
@@ -103,6 +98,3 @@ if __name__ == "__main__":
                 print_error(e)
             except Exception as e:
                 print_error(f"Unexpected error: {e}")
-    else:
-        print_error("Invalid mode. Please specify 'default' or 'custom'.")
-        parser.print_help()
