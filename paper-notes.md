@@ -82,7 +82,6 @@ GitHub Repository: [https://github.com/shijx12/KQAPro_Baselines](https://github.
   }
   ```
 
-  
 
 ### Models used in Paper
 
@@ -97,7 +96,7 @@ Illustrations for the models in the code repository:
 ├── RGCN  # Other baseline model
 ├── SRN  # Other baseline model
 ├── KVMemNN  # Other baseline model
-├── BlindGRU  # Not mentioned in the paper ?
+├── BlindGRU  # predicts answer with only the input question, ignoring the knowledge base
 ```
 
 SP-based Models: 
