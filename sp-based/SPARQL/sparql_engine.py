@@ -10,7 +10,17 @@ from utils.value_class import ValueClass
 
 
 virtuoso_address = "http://127.0.0.1:8890/sparql"
-virtuoso_graph_uri = 'sjx'
+virtuoso_graph_uri = 'my_graph'
+
+"""
+SPARQL CREATE GRAPH <my_graph>;
+SPARQL CLEAR GRAPH <my_graph>;
+DELETE FROM DB.DBA.load_list;
+LD_DIR('/usr/local/virtuoso-opensource/share/virtuoso/vad', 'kb.ttl', 'my_graph');
+RDF_LOADER_RUN();
+SELECT * FROM DB.DBA.load_list;
+EXIT;
+"""
 
 
 def legal(s):
