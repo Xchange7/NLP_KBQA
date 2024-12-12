@@ -179,7 +179,7 @@ def train(args):
                     meters.delimiter.join(
                         [
                             f"epoch: {epoch}",
-                            f"progress: {iteration:.3f}/{len(train_loader)}",
+                            f"batch: {iteration}/{len(train_loader)}",
                             f"{meters}",
                             f"lr: {optimizer.param_groups[0]['lr']:.6f}",
                         ]
