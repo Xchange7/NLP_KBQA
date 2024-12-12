@@ -186,14 +186,19 @@ def train(args):
                     )
                 )
         
-        acc = validate(args, kb, model, val_loader, device)
+        if args.virtuoso_enabled:
+            acc = validate(args, kb, model, val_loader, device)
         scheduler.step()
         # if acc and acc > best_acc:
         #     best_acc = acc
         # logging.info("update best ckpt with acc: {:.4f}".format(best_acc))
-        logging.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
-        logging.info("Saving model with accuracy: {:.4f}".format(acc))
-        torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}_val_acc{acc}.pt'))
+        if args.virtuoso_enabled:
+            logging.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
+            logging.info("Saving model with accuracy: {:.4f}".format(acc))
+            torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}_val_acc{acc}.pt'))
+        else:
+            logging.info("Finish epoch: {}, without validation".format(epoch))
+            torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}.pt'))
 
 
 def main():
@@ -212,6 +217,14 @@ def main():
     parser.add_argument('--dim_word', default=300, type=int)
     parser.add_argument('--dim_hidden', default=1024, type=int)
     parser.add_argument('--max_dec_len', default=100, type=int)
+
+    """
+    virtuoso backend:
+    - if True, access virtuoso database with SPARQL query during 'validation' process
+    - if False, skip the validation part when training
+    """
+    parser.add_argument('--virtuoso_enabled', required=True, type=bool)
+
     args = parser.parse_args()
 
     # make logging.info display into both shell and file
