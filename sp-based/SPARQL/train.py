@@ -186,13 +186,13 @@ def train(args):
                     )
                 )
         
-        if args.virtuoso_enabled:
+        if args.virtuoso_enabled.lower() == "true":
             acc = validate(args, kb, model, val_loader, device)
         scheduler.step()
         # if acc and acc > best_acc:
         #     best_acc = acc
         # logging.info("update best ckpt with acc: {:.4f}".format(best_acc))
-        if args.virtuoso_enabled:
+        if args.virtuoso_enabled.lower() == "true":
             logging.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
             logging.info("Saving model with accuracy: {:.4f}".format(acc))
             torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}_val_acc{acc}.pt'))
@@ -223,7 +223,7 @@ def main():
     - if True, access virtuoso database with SPARQL query during 'validation' process
     - if False, skip the validation part when training
     """
-    parser.add_argument('--virtuoso_enabled', required=True, type=bool)
+    parser.add_argument('--virtuoso_enabled', required=True, type=str)
 
     args = parser.parse_args()
 
