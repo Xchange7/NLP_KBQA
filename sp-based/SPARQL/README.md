@@ -117,7 +117,7 @@ cp ./datasets/kb.json processed_data/
 ```
 3. Train
 ```
-python -m SPARQL.train --input_dir processed_data --save_dir checkpoints
+python -m SPARQL.train --input_dir processed_data --save_dir checkpoints --virtuoso_enabled True --num_epoch 10 
 ```
 4. Predict answers of the test set. It will produce a file named `predict.txt` in the `--save_dir`, storing the predictions of test questions in order.
 ```
