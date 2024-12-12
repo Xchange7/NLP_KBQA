@@ -88,13 +88,18 @@ def validate(args, kb, model, data, device):
                     end_idx = s.index('<END>')
                 s = ' '.join(s[1:end_idx])
                 s = postprocess_sparql_tokens(s)
-                pred_answer = get_sparql_answer(s, kb)
+                try:
+                    pred_answer = get_sparql_answer(s, kb)
+                except Exception as e:
+                    logging.error('Error in validatation when executing SPARQL query: \n{}'.format(s))
+                    logging.error('Error message: \n{}'.format(e))
+                    pred_answer = None
                 is_match = whether_equal(given_answer, pred_answer)
                 if is_match:
                     correct += 1
             count += len(answer)
     acc = correct / count
-    logging.info('\nValid Accuracy: %.4f\n' % acc)
+    logging.info('Valid Accuracy: %.4f\n' % acc)
     return acc
 
 def test_sparql(args):
@@ -119,13 +124,18 @@ def test_sparql(args):
                 end_idx = s.index('<END>')
             s = ' '.join(s[1:end_idx])
             s = postprocess_sparql_tokens(s)
-            pred_answer = get_sparql_answer(s, kb)
+            try:
+                pred_answer = get_sparql_answer(s, kb)
+            except Exception as e:
+                logging.error('Error in test_sparql(args) when executing SPARQL query: \n{}'.format(s))
+                logging.error('Error message: \n{}'.format(e))
+                pred_answer = None
             is_match = whether_equal(given_answer, pred_answer)
             count += 1
             if is_match:
                 correct += 1
             else:
-                print(given_answer, pred_answer)
+                logging.info('Mismatch: Given answer: {}, Predicted answer: {}'.format(given_answer, pred_answer))
                 # return  # FIXME: remove this line after debugging
 
 def train(args):
@@ -168,23 +178,22 @@ def train(args):
                 logging.info(
                     meters.delimiter.join(
                         [
-                            "progress: {progress:.3f}",
-                            "{meters}",
-                            "lr: {lr:.6f}",
+                            f"epoch: {epoch}",
+                            f"progress: {iteration:.3f}/{len(train_loader)}",
+                            f"{meters}",
+                            f"lr: {optimizer.param_groups[0]['lr']:.6f}",
                         ]
-                    ).format(
-                        progress=epoch + iteration / len(train_loader),
-                        meters=str(meters),
-                        lr=optimizer.param_groups[0]["lr"],
                     )
                 )
         
         acc = validate(args, kb, model, val_loader, device)
         scheduler.step()
-        if acc and acc > best_acc:
-            best_acc = acc
-            logging.info("\nupdate best ckpt with acc: {:.4f}".format(best_acc))
-        torch.save(model.state_dict(), os.path.join(args.save_dir, 'model.pt'))
+        # if acc and acc > best_acc:
+        #     best_acc = acc
+        # logging.info("update best ckpt with acc: {:.4f}".format(best_acc))
+        logging.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
+        logging.info("Saving model with accuracy: {:.4f}".format(acc))
+        torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}_val_acc{acc}.pt'))
 
 
 def main():
