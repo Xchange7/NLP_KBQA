@@ -10,16 +10,16 @@ from utils.value_class import ValueClass
 
 
 virtuoso_address = "http://127.0.0.1:8890/sparql"
-virtuoso_graph_uri = 'my_graph'
+virtuoso_graph_uri = 'http://nlp.project.tudelft.nl/kqapro'
 
 """
-SPARQL CREATE GRAPH <my_graph>;
-SPARQL CLEAR GRAPH <my_graph>;
-DELETE FROM DB.DBA.load_list;
-LD_DIR('/usr/local/virtuoso-opensource/share/virtuoso/vad', 'kb.ttl', 'my_graph');
-RDF_LOADER_RUN();
-SELECT * FROM DB.DBA.load_list;
-EXIT;
+SPARQL CREATE GRAPH <http://nlp.project.tudelft.nl/kqapro>;
+SPARQL CLEAR GRAPH <http://nlp.project.tudelft.nl/kqapro>;
+delete from db.dba.load_list;
+ld_dir('/usr/local/virtuoso-opensource/share/virtuoso/vad', 'kb.ttl', 'http://nlp.project.tudelft.nl/kqapro');
+rdf_loader_run();
+select * from DB.DBA.load_list;
+exit;
 """
 
 
@@ -145,8 +145,12 @@ class SparqlEngine():
 
 
 def query_virtuoso(q):
+    """
+    virtuoso_address = "http://127.0.0.1:8890/sparql"
+    virtuoso_graph_uri = 'http://nlp.project.tudelft.nl/kqapro'
+    """
     endpoint = virtuoso_address
-    store=sparqlstore.SPARQLUpdateStore(endpoint)
+    store = sparqlstore.SPARQLUpdateStore(endpoint)
     gs = rdflib.ConjunctiveGraph(store)
     gs.open((endpoint, endpoint))
     gs1 = gs.get_context(rdflib.URIRef(virtuoso_graph_uri))
