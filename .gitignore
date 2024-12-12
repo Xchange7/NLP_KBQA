@@ -6,3 +6,6 @@ sp-based/*/__pycache__/
 sp-based/.ipynb_checkpoints/
 
 sp-based/Virtuoso-Opensource/
+
+# output file from test_sparql_engine.py
+sp-based/test_sparql_engine_output.txt
