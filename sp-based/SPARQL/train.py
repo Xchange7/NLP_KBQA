@@ -126,6 +126,7 @@ def test_sparql(args):
                 correct += 1
             else:
                 print(given_answer, pred_answer)
+                # return  # FIXME: remove this line after debugging
 
 def train(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
