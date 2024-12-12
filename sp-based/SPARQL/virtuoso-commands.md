@@ -74,10 +74,10 @@ You are success if `rdf_loader_run()` lasts for about 10 seconds.
 
 ### Additions
 
-1. Display all processes running virtuoso service: 
+1. Display the process running virtuoso service: 
 
    ```shell
-   ps -ef | grep "sudo -H -u virtuoso ../../../../bin/virtuoso-t -f"
+   ps -u virtuoso
    ```
 
    Then kill them by PID:
@@ -86,10 +86,8 @@ You are success if `rdf_loader_run()` lasts for about 10 seconds.
    kill -9 <PID>
    ```
 
-2. Fetch all processes running virtuoso service and kill:
+2. Check the usage of port 8890:
 
    ```shell
-   ps -ef | grep "sudo -H -u virtuoso ../../../../bin/virtuoso-t -f" | awk '{print $2}' | xargs kill -9
+   netstat -tulnp | grep 8890
    ```
-
-3. 
