@@ -109,10 +109,10 @@ def test(args, model_name):
                 # print('Error in testing when executing SPARQL query: \n{}'.format(s))
                 pred_answer = None
             is_match = whether_equal(given_answer, pred_answer)
+            count += 1
             if is_match:
                 correct += 1
             answer = str(pred_answer)
-        count += len(answer)
     
     acc = correct / count
     logger.info(f'Test Accuracy of model {model_name}: {acc:.4f}\n')
