@@ -13,3 +13,10 @@ sp-based/test_sparql_engine_output.txt
 
 sp-based/test_results/log.txt
 # sp-based/test_results/*.json  # keep the json result files
+
+# ------------------------------
+
+sp-based/bart_checkpoints/*
+sp-based/bart_checkpoints_from_colab/*
+sp-based/bart_processed_data/*
+sp-based/pretrained_models/

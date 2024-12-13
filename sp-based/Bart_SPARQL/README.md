@@ -1,11 +1,12 @@
-> ***See*** `SPARQL_pipeline.ipynb` ***for detailed setup instructions!***
+> ***See*** `Bart_SPARQL_pipeline.ipynb` ***for detailed setup instructions!***
 
 ## Requirements
 
-- python3
-- rdflib=4.2.2
+- python3.7
+- rdflib=4.2.2 or 6.1.1
+- transformers
 ---
-**Note:** 
+**Note for rdflib 4.2.2:** 
 After installing rdflib via `pip` or `anaconda` or some other tools, we need to fix some bugs of it.
 
 First, find your rdflib location. One possible way is to run following codes in ipython 
@@ -23,6 +24,9 @@ Remember to keep the original indentation.
 Note that *Line 67* is a comment of `# is this bnode the subject of more triplets?`. If your line number is different from mine, you could locate the target line by this comment.
 
 Finally, open `plugins/serializers/turtle.py`, find *Line 328*, change `use_plain=True` to `use_plain=False`
+
+**Note for rdflib 6.1.1:** 
+If you have an erro " can't set attribute" with rdflib=4.2.2,you should try rdflib=6.1.1 .
 
 ---
 
@@ -79,9 +83,16 @@ sudo -H -u virtuoso ../../../../bin/virtuoso-t -f &
 Now you can access the service via the default port 8890.
 Enter `[ip]:8890` in a browser, you will see the virtuoso service page.
 
+[note] The virtuoso may report an erro "There is no configuration file virtuoso.ini" when start up. 
+```
+sudo vim /etc/rc.conf
+```
+Add a line：`virtuoso_config="/usr/local/virtuoso-opensource/var/lib/virtuoso/db/virtuoso.ini"`
+
+
 5. Now we can import our kb into virtuoso. Before that, we need to convert our kb to `ttl` format and move it to proper position:
 ```
-PYTHONPATH=$(pwd) python3 SPARQL/sparql_engine.py --kb_path datasets/kb.json --ttl_path datasets/kb.ttl
+PYTHONPATH=$(pwd) python3 Bart_SPARQL/sparql_engine.py --kb_path datasets/kb.json --ttl_path datasets/kb.ttl
 sudo chmod 777 datasets/kb.ttl
 sudo cp datasets/kb.ttl /usr/local/virtuoso-opensource/share/virtuoso/vad
 ```
@@ -115,14 +126,19 @@ virtuoso_graph_uri = "<http://nlp.project.tudelft.nl/kqapro>"
 Change `virtuoso_address` to your service url (you can visit it in your browser to check whether it is valid) and change `virtuoso_graph_uri` to your `<graph_name>`.
 2. Preprocess the training data
 ```
-python -m SPARQL.preprocess --input_dir datasets --output_dir processed_data
-cp ./datasets/kb.json processed_data/
+python -m Bart_SPARQL.preprocess --input_dir datasets --output_dir bart_processed_data --model_name_or_path <dir/of/pretrained/BartModel>
+cp ./datasets/kb.json bart_processed_data/
 ```
 3. Train
 ```
-python -m SPARQL.train --input_dir processed_data --save_dir checkpoints --virtuoso_enabled True --num_epoch 10 
+python -m Bart_SPARQL.train --input_dir bart_processed_data --output_dir bart_checkpoints --model_name_or_path <dir/of/pretrained/BartModel> --save_dir bart_checkpoints
 ```
 4. Predict answers of the test set. It will produce a file named `predict.txt` in the `--save_dir`, storing the predictions of test questions in order.
 ```
-python -m SPARQL.predict --input_dir processed_data --save_dir checkpoints
+python -m Bart_SPARQL.predict --input_dir <dir/of/processed/files> --ckpt <dir/of/checkpoint> --save_dir <dir/of/log/files>
 ```
+
+## Checkpoints
+1. The pretrained Bart-base checkpoint without finetuning can be downloaded here [bart-base](https://cloud.tsinghua.edu.cn/f/3b59ec6c43034cfc8841/?dl=1)
+2. The checkpoint for finetuned Bart_SPARQL can be downloaded here [finetuned](https://cloud.tsinghua.edu.cn/f/1b9746dcd96b4fca870d/?dl=1)
+
