@@ -240,7 +240,7 @@ def main():
 
     # args display
     for k, v in vars(args).items():
-        logger.info(k+':'+str(v))
+        logger.info(k+': '+str(v))
 
     # set random seed
     torch.manual_seed(args.seed)
@@ -249,7 +249,7 @@ def main():
         try:
             test_sparql_engine.execute(disable_output=True)
         except Exception as e:
-            logger.error(f'Error in train:main() when executing test_sparql_engine.execute(disable_output=True): \n{e}')
+            logger.error(f'Error in train.py:main() when executing test_sparql_engine.execute(disable_output=True): \n{e}')
             logger.error('Please check whether the virtuoso server is running and the connection is correct.')
             exit(1)
 

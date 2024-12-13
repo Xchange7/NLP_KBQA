@@ -10,3 +10,6 @@ sp-based/Virtuoso-Opensource/
 
 # output file from test_sparql_engine.py
 sp-based/test_sparql_engine_output.txt
+
+sp-based/test_results/log.txt
+# sp-based/test_results/*.json  # keep the json result files

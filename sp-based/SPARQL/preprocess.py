@@ -48,8 +48,8 @@ def encode_dataset(dataset, vocab, test=False):
         _ = [vocab['answer_token_to_idx'][w] for w in question['choices']]
         choices.append(_)
 
-        if test:
-            continue
+        # if test:  ## FIXME FIXME FIXME: encode `answer` field in `test.pt` file
+        #     continue
 
         _ = [vocab['sparql_token_to_idx'].get(w, vocab['sparql_token_to_idx']['<UNK>']) 
             for w in tokenize_sparql(question['sparql'])]
@@ -65,12 +65,12 @@ def encode_dataset(dataset, vocab, test=False):
     for q in questions:
         while len(q) < max_len:
             q.append(vocab['word_token_to_idx']['<PAD>'])
-    if not test:
-        # sparql padding
-        max_len = max(len(s) for s in sparqls)
-        for s in sparqls:
-            while len(s) < max_len:
-                s.append(vocab['sparql_token_to_idx']['<PAD>'])
+    # if not test:  ## FIXME FIXME FIXME: encode `answer` field in `test.pt` file
+    # sparql padding
+    max_len = max(len(s) for s in sparqls)
+    for s in sparqls:
+        while len(s) < max_len:
+            s.append(vocab['sparql_token_to_idx']['<PAD>'])
 
     questions = np.asarray(questions, dtype=np.int32)
     sparqls = np.asarray(sparqls, dtype=np.int32)

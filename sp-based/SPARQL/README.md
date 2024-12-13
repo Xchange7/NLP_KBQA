@@ -1,4 +1,7 @@
+> ***See*** `SPARQL_pipeline.ipynb` ***for detailed setup instructions!***
+
 ## Requirements
+
 - python3
 - rdflib=4.2.2
 ---
