@@ -15,12 +15,13 @@ from .model import SPARQLParser
 from .sparql_engine import get_sparql_answer
 from .preprocess import postprocess_sparql_tokens
 
-import logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)-8s %(message)s')
-logFormatter = logging.Formatter('%(asctime)s %(levelname)-8s %(message)s')
-rootLogger = logging.getLogger()
+from . import test_sparql_engine
+
+from loguru import logger
+
 import warnings
 warnings.simplefilter("ignore") # hide warnings that caused by invalid sparql query
+
 
 def whether_equal(answer, pred):
     """
@@ -91,15 +92,15 @@ def validate(args, kb, model, data, device):
                 try:
                     pred_answer = get_sparql_answer(s, kb)
                 except Exception as e:
-                    logging.error('Error in validatation when executing SPARQL query: \n{}'.format(s))
-                    # logging.error('Error message: \n{}'.format(e))
+                    # logger.error('Error in validatation when executing SPARQL query: \n{}'.format(s))
+                    # logger.error('Error message: \n{}'.format(e))
                     pred_answer = None
                 is_match = whether_equal(given_answer, pred_answer)
                 if is_match:
                     correct += 1
             count += len(answer)
     acc = correct / count
-    logging.info('Valid Accuracy: %.4f\n' % acc)
+    logger.info('Valid Accuracy: %.4f\n' % acc)
     return acc
 
 def test_sparql(args):
@@ -127,21 +128,21 @@ def test_sparql(args):
             try:
                 pred_answer = get_sparql_answer(s, kb)
             except Exception as e:
-                logging.error('Error in test_sparql(args) when executing SPARQL query: \n{}'.format(s))
-                logging.error('Error message: \n{}'.format(e))
+                logger.error('Error in test_sparql(args) when executing SPARQL query: \n{}'.format(s))
+                logger.error('Error message: \n{}'.format(e))
                 pred_answer = None
             is_match = whether_equal(given_answer, pred_answer)
             count += 1
             if is_match:
                 correct += 1
             else:
-                logging.info('Mismatch: Given answer: {}, Predicted answer: {}'.format(given_answer, pred_answer))
+                logger.info('Mismatch: Given answer: {}, Predicted answer: {}'.format(given_answer, pred_answer))
                 # return  # FIXME: remove this line after debugging
 
 def train(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    logging.info("Create train_loader and val_loader.........")
+    logger.info("Create train_loader and val_loader.........")
     vocab_json = os.path.join(args.input_dir, 'vocab.json')
     train_pt = os.path.join(args.input_dir, 'train.pt')
     val_pt = os.path.join(args.input_dir, 'val.pt')
@@ -150,10 +151,10 @@ def train(args):
     vocab = train_loader.vocab
     kb = DataForSPARQL(os.path.join(args.input_dir, 'kb.json'))
 
-    logging.info("Create model.........")
+    logger.info("Create model.........")
     model = SPARQLParser(vocab, args.dim_word, args.dim_hidden, args.max_dec_len)
     model = model.to(device)
-    logging.info(model)
+    logger.info(model)
 
     optimizer = optim.Adam(model.parameters(), args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[5, 50], gamma=0.1)
@@ -161,7 +162,7 @@ def train(args):
     # validate(args, kb, model, val_loader, device)
     meters = MetricLogger(delimiter="  ")
     best_acc = -1
-    logging.info("Start training........")
+    logger.info("Start training........")
     for epoch in range(args.num_epoch):
         model.train()
         for iteration, batch in enumerate(train_loader):
@@ -175,7 +176,7 @@ def train(args):
             meters.update(loss=loss.item())
 
             if iteration % (len(train_loader) // 100) == 0:
-                logging.info(
+                logger.info(
                     meters.delimiter.join(
                         [
                             f"epoch: {epoch}",
@@ -191,13 +192,13 @@ def train(args):
         scheduler.step()
         # if acc and acc > best_acc:
         #     best_acc = acc
-        # logging.info("update best ckpt with acc: {:.4f}".format(best_acc))
+        # logger.info("update best ckpt with acc: {:.4f}".format(best_acc))
         if args.virtuoso_enabled.lower() == "true":
-            logging.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
-            logging.info("Saving model with accuracy: {:.4f}".format(acc))
+            logger.info("Finish epoch: {}, validation accuracy: {:.4f}".format(epoch, acc))
+            logger.info("Saving model with accuracy: {:.4f}".format(acc))
             torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}_val_acc{acc}.pt'))
         else:
-            logging.info("Finish epoch: {}, without validation".format(epoch))
+            logger.info("Finish epoch: {}, without validation".format(epoch))
             torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}.pt'))
 
 
@@ -223,23 +224,34 @@ def main():
     - if True, access virtuoso database with SPARQL query during 'validation' process
     - if False, skip the validation part when training
     """
-    parser.add_argument('--virtuoso_enabled', required=True, type=str)
+    parser.add_argument('--virtuoso_enabled', required=True, type=str, help="whether to enable validation process with virtuoso backend")
 
     args = parser.parse_args()
 
-    # make logging.info display into both shell and file
+    # make logger.info display into both shell and file
     if os.path.isdir(args.save_dir):
         shutil.rmtree(args.save_dir)
     os.mkdir(args.save_dir)
-    fileHandler = logging.FileHandler(os.path.join(args.save_dir, 'log.txt'))
-    fileHandler.setFormatter(logFormatter)
-    rootLogger.addHandler(fileHandler)
+
+    # fileHandler = logger.FileHandler(os.path.join(args.save_dir, 'log.txt'))
+    # fileHandler.setFormatter(logFormatter)
+    # rootLogger.addHandler(fileHandler)
+    logger.add(os.path.join(args.save_dir, 'log.txt'), format="{time} {level:8} {message}")
+
     # args display
     for k, v in vars(args).items():
-        logging.info(k+':'+str(v))
+        logger.info(k+':'+str(v))
 
     # set random seed
     torch.manual_seed(args.seed)
+
+    if args.virtuoso_enabled.lower() == "true":
+        try:
+            test_sparql_engine.execute(disable_output=True)
+        except Exception as e:
+            logger.error(f'Error in train:main() when executing test_sparql_engine.execute(disable_output=True): \n{e}')
+            logger.error('Please check whether the virtuoso server is running and the connection is correct.')
+            exit(1)
 
     train(args)
     # test_sparql(args)

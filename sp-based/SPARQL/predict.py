@@ -10,6 +10,10 @@ from .model import SPARQLParser
 from .sparql_engine import get_sparql_answer
 from .preprocess import postprocess_sparql_tokens
 
+from . import test_sparql_engine
+
+from loguru import logger
+
 import warnings
 warnings.simplefilter("ignore") # hide warnings that caused by invalid sparql query
 
@@ -46,8 +50,7 @@ def test(args):
             try:
                 pred_answer = get_sparql_answer(s, kb)
             except Exception as e:
-                print('Error in testing when executing SPARQL query: \n{}'.format(s))
-                # logging.error('Error message: \n{}'.format(e))
+                # print('Error in testing when executing SPARQL query: \n{}'.format(s))
                 pred_answer = None
             answer = str(pred_answer)
             f.write(answer + '\n')
@@ -66,6 +69,16 @@ def main():
     parser.add_argument('--dim_hidden', default=1024, type=int)
     parser.add_argument('--max_dec_len', default=100, type=int)
     args = parser.parse_args()
+
+    logger.add(os.path.join(args.save_dir, 'log.txt'), format="{time} {level:8} {message}")
+
+    if args.virtuoso_enabled.lower() == "true":
+        try:
+            test_sparql_engine.execute(disable_output=True)
+        except Exception as e:
+            logger.error(f'Error in train:main() when executing test_sparql_engine.execute(disable_output=True): \n{e}')
+            logger.error('Please check whether the virtuoso server is running and the connection is correct.')
+            exit(1)
 
     test(args)
 
