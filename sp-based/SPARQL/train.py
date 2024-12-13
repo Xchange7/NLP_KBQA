@@ -92,7 +92,7 @@ def validate(args, kb, model, data, device):
                     pred_answer = get_sparql_answer(s, kb)
                 except Exception as e:
                     logging.error('Error in validatation when executing SPARQL query: \n{}'.format(s))
-                    logging.error('Error message: \n{}'.format(e))
+                    # logging.error('Error message: \n{}'.format(e))
                     pred_answer = None
                 is_match = whether_equal(given_answer, pred_answer)
                 if is_match:

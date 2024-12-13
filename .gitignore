@@ -1,5 +1,6 @@
 sp-based/datasets/*
 sp-based/checkpoints/*
+sp-based/checkpoints_from_colab/*
 sp-based/processed_data/*
 sp-based/*.zip
 sp-based/*/__pycache__/

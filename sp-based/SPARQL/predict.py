@@ -43,7 +43,13 @@ def test(args):
                 end_idx = s.index('<END>')
             s = ' '.join(s[1:end_idx])
             s = postprocess_sparql_tokens(s)
-            answer = str(get_sparql_answer(s, kb))
+            try:
+                pred_answer = get_sparql_answer(s, kb)
+            except Exception as e:
+                print('Error in testing when executing SPARQL query: \n{}'.format(s))
+                # logging.error('Error message: \n{}'.format(e))
+                pred_answer = None
+            answer = str(pred_answer)
             f.write(answer + '\n')
     f.close()
 
