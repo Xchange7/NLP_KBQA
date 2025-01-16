@@ -141,6 +141,7 @@ def test_sparql(args):
 
 def train(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    logger.info(f"Using device: {device}")
 
     logger.info("Create train_loader and val_loader.........")
     vocab_json = os.path.join(args.input_dir, 'vocab.json')
@@ -151,28 +152,33 @@ def train(args):
     vocab = train_loader.vocab
     kb = DataForSPARQL(os.path.join(args.input_dir, 'kb.json'))
 
-    logger.info("Create model.........")
     model = SPARQLParser(vocab, args.dim_word, args.dim_hidden, args.max_dec_len)
     model = model.to(device)
+
+    # load model if resume_training is True, otherwise create a new model
+    if args.resume_training:
+        model_path = os.path.join(args.save_dir, args.resume_model)
+        if os.path.exists(model_path):
+            logger.info(f"Loading model parameters trained with {args.resume_epoch} epochs, from {model_path}")
+            model.load_state_dict(torch.load(model_path, map_location=device))
+            logger.info(f"Model loaded on {device}.")
+        else:
+            logger.warning(f"No model found at {model_path}, starting from scratch")
+            logger.info("Create model.........")
+
     logger.info(model)
+            
 
     optimizer = optim.Adam(model.parameters(), args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[5, 50], gamma=0.1)
 
-    # resume training if args.resume_training is True
-    if args.resume_training:
-        model_path = os.path.join(args.save_dir, args.resume_model)
-        if os.path.exists(model_path):
-            logger.info(f"Resuming training from epoch {args.resume_epoch}")
-            model.load_state_dict(torch.load(model_path))
-        else:
-            logger.warning(f"No model found at {model_path}, starting from scratch")
+    
 
     # validate(args, kb, model, val_loader, device)
     meters = MetricLogger(delimiter="  ")
     best_acc = -1
     logger.info("Start training........")
-    for epoch in range(args.resume_epoch if args.resume_training else 0, args.num_epoch):
+    for epoch in range(args.resume_epoch + 1 if args.resume_training else 0, args.num_epoch):
         model.train()
         for iteration, batch in enumerate(train_loader):
             iteration = iteration + 1
@@ -245,7 +251,7 @@ def main():
     # # make logger.info display into both shell and file
     # if os.path.isdir(args.save_dir):
     #     shutil.rmtree(args.save_dir)
-    os.mkdir(args.save_dir, exist_ok=True)
+    os.makedirs(args.save_dir, exist_ok=True)
 
     # fileHandler = logger.FileHandler(os.path.join(args.save_dir, 'log.txt'))
     # fileHandler.setFormatter(logFormatter)
