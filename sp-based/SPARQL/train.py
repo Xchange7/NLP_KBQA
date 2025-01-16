@@ -158,7 +158,7 @@ def train(args):
     reload = False
 
     # load model if resume_training is True, otherwise create a new model
-    if args.resume_training:
+    if args.resume_training == "True":
         model_path = os.path.join(args.save_dir, args.resume_model)
         if os.path.exists(model_path):
             logger.info(f"Loading model parameters trained with {args.resume_epoch} epochs, from {model_path}")
@@ -238,7 +238,7 @@ def main():
     parser.add_argument('--max_dec_len', default=100, type=int)
 
     # resume training
-    parser.add_argument('--resume_training', default=False, type=bool)
+    parser.add_argument('--resume_training', default="False", type=str)
     parser.add_argument('--resume_epoch', default=0, type=int)
     parser.add_argument('--resume_model', default='model_epoch0.pt')
 
