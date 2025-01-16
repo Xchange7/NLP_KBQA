@@ -155,6 +155,8 @@ def train(args):
     model = SPARQLParser(vocab, args.dim_word, args.dim_hidden, args.max_dec_len)
     model = model.to(device)
 
+    reload = False
+
     # load model if resume_training is True, otherwise create a new model
     if args.resume_training:
         model_path = os.path.join(args.save_dir, args.resume_model)
@@ -162,6 +164,7 @@ def train(args):
             logger.info(f"Loading model parameters trained with {args.resume_epoch} epochs, from {model_path}")
             model.load_state_dict(torch.load(model_path, map_location=device))
             logger.info(f"Model loaded on {device}.")
+            reload = True
         else:
             logger.warning(f"No model found at {model_path}, starting from scratch")
             logger.info("Create model.........")
@@ -178,7 +181,7 @@ def train(args):
     meters = MetricLogger(delimiter="  ")
     best_acc = -1
     logger.info("Start training........")
-    for epoch in range(args.resume_epoch + 1 if args.resume_training else 0, args.num_epoch):
+    for epoch in range(args.resume_epoch + 1 if reload else 0, args.num_epoch):
         model.train()
         for iteration, batch in enumerate(train_loader):
             iteration = iteration + 1
