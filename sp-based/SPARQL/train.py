@@ -159,11 +159,20 @@ def train(args):
     optimizer = optim.Adam(model.parameters(), args.lr, weight_decay=args.weight_decay)
     scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer, milestones=[5, 50], gamma=0.1)
 
+    # resume training if args.resume_training is True
+    if args.resume_training:
+        model_path = os.path.join(args.save_dir, args.resume_model)
+        if os.path.exists(model_path):
+            logger.info(f"Resuming training from epoch {args.resume_epoch}")
+            model.load_state_dict(torch.load(model_path))
+        else:
+            logger.warning(f"No model found at {model_path}, starting from scratch")
+
     # validate(args, kb, model, val_loader, device)
     meters = MetricLogger(delimiter="  ")
     best_acc = -1
     logger.info("Start training........")
-    for epoch in range(args.num_epoch):
+    for epoch in range(args.resume_epoch if args.resume_training else 0, args.num_epoch):
         model.train()
         for iteration, batch in enumerate(train_loader):
             iteration = iteration + 1
@@ -201,7 +210,6 @@ def train(args):
             logger.info("Finish epoch: {}, without validation".format(epoch))
             torch.save(model.state_dict(), os.path.join(args.save_dir, f'model_epoch{epoch}.pt'))
 
-
 def main():
     parser = argparse.ArgumentParser()
     # input and output
@@ -214,10 +222,16 @@ def main():
     parser.add_argument('--num_epoch', default=10, type=int)
     parser.add_argument('--batch_size', default=64, type=int)
     parser.add_argument('--seed', type=int, default=666, help='random seed')
+
     # model hyperparameters
     parser.add_argument('--dim_word', default=300, type=int)
     parser.add_argument('--dim_hidden', default=1024, type=int)
     parser.add_argument('--max_dec_len', default=100, type=int)
+
+    # resume training
+    parser.add_argument('--resume_training', default=False, type=bool)
+    parser.add_argument('--resume_epoch', default=0, type=int)
+    parser.add_argument('--resume_model', default='model_epoch0.pt')
 
     """
     virtuoso backend:
@@ -228,10 +242,10 @@ def main():
 
     args = parser.parse_args()
 
-    # make logger.info display into both shell and file
-    if os.path.isdir(args.save_dir):
-        shutil.rmtree(args.save_dir)
-    os.mkdir(args.save_dir)
+    # # make logger.info display into both shell and file
+    # if os.path.isdir(args.save_dir):
+    #     shutil.rmtree(args.save_dir)
+    os.mkdir(args.save_dir, exist_ok=True)
 
     # fileHandler = logger.FileHandler(os.path.join(args.save_dir, 'log.txt'))
     # fileHandler.setFormatter(logFormatter)
