@@ -20,3 +20,7 @@ sp-based/bart_checkpoints/*
 sp-based/bart_checkpoints_from_colab/*
 sp-based/bart_processed_data/*
 sp-based/pretrained_models/
+
+.idea
+.DS_Store
+__pycache__
