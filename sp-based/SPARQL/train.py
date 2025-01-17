@@ -158,15 +158,15 @@ def train(args):
     reload = False
 
     # load model if resume_training is True, otherwise create a new model
-    if args.resume_training == "True":
+    if args.resume_training.lower() == "true":
         model_path = os.path.join(args.save_dir, args.resume_model)
         if os.path.exists(model_path):
-            logger.info(f"Loading model parameters trained with {args.resume_epoch} epochs, from {model_path}")
+            logger.info(f"Resuming training from {model_path}, starting at epoch {args.resume_epoch}")
             model.load_state_dict(torch.load(model_path, map_location=device))
             logger.info(f"Model loaded on {device}.")
             reload = True
         else:
-            logger.warning(f"No model found at {model_path}, starting from scratch")
+            logger.warning(f"Resume model path {model_path} does not exist. Starting fresh training.")
             logger.info("Create model.........")
 
     logger.info(model)
