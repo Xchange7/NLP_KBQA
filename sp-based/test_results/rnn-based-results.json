@@ -19,5 +19,15 @@
     "checkpoints_from_colab/model_epoch17.pt": 0.3622,
     "checkpoints_from_colab/model_epoch18.pt": 0.3762,
     "checkpoints_from_colab/model_epoch19.pt": 0.3788,
-    "checkpoints_from_colab/model_epoch20.pt": 0.2178
+    "checkpoints_from_colab/model_epoch20.pt": 0.2178,
+    "checkpoints_from_colab/model_epoch21.pt": 0.23,
+    "checkpoints_from_colab/model_epoch22.pt": 0.2398,
+    "checkpoints_from_colab/model_epoch23.pt": 0.2638,
+    "checkpoints_from_colab/model_epoch24.pt": 0.291,
+    "checkpoints_from_colab/model_epoch25.pt": 0.4228,
+    "checkpoints_from_colab/model_epoch26.pt": 0.4364,
+    "checkpoints_from_colab/model_epoch27.pt": 0.4384,
+    "checkpoints_from_colab/model_epoch28.pt": 0.4468,
+    "checkpoints_from_colab/model_epoch29.pt": 0.4538,
+    "checkpoints_from_colab/model_epoch30.pt": 0.4476
 }
