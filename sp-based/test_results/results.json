@@ -1,7 +1,0 @@
-{
-    "checkpoints_from_colab/model_epoch0.pt": 0.0708,
-    "checkpoints_from_colab/model_epoch1.pt": 0.0732,
-    "checkpoints_from_colab/model_epoch2.pt": 0.0708,
-    "checkpoints_from_colab/model_epoch3.pt": 0.0726,
-    "checkpoints_from_colab/model_epoch4.pt": 0.074
-}

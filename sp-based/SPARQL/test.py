@@ -185,7 +185,7 @@ Run in command line:
     python -m SPARQL.test --input_dir processed_data --save_dir checkpoints/model_epoch0.pt --mode single --results_dir test_results
 
 - 'multiple' mode:
-    python -m SPARQL.test --input_dir processed_data --save_dir checkpoints --mode multiple --results_dir test_results
+    python3 -m SPARQL.test --input_dir processed_data --save_dir checkpoints --mode multiple --results_dir test_results
 """
 if __name__ == '__main__':
     main()
